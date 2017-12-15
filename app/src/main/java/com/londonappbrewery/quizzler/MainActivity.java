@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.TextView;
 import android.widget.Toast;
 
 public class MainActivity extends Activity {
@@ -15,6 +16,9 @@ public class MainActivity extends Activity {
     // TODO: Declare member variables here:
     Button mTrueButton;
     Button mFalseButton;
+    TextView mQuestionTextView;
+    int mIndex;
+    int mQuestion;
 
 
     // TODO: Uncomment to create question bank
@@ -41,23 +45,43 @@ public class MainActivity extends Activity {
 
         mTrueButton = (Button) findViewById(R.id.true_button);
         mFalseButton = (Button) findViewById(R.id.false_button);
+        mQuestionTextView = (TextView) findViewById(R.id.question_text_view);
 
-        View.OnClickListener myListener = new View.OnClickListener() {
+        mQuestion = mQuestionBank[mIndex].getQuestionID();
+
+        mQuestionTextView.setText(mQuestion);
+
+        mTrueButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(getApplicationContext(),"True Pressed",Toast.LENGTH_SHORT).show();
+                checkAnswer(true);
+                updateQuestion();
             }
-        };
-
-        mTrueButton.setOnClickListener(myListener);
+        });
 
         mFalseButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
-                Toast myToast = Toast.makeText(getApplicationContext(),"False Pressed", Toast.LENGTH_SHORT);
-                myToast.show();
+                checkAnswer(false);
+                updateQuestion();
             }
         });
+    }
+
+    private void updateQuestion() {
+        mIndex = (mIndex + 1) % mQuestionBank.length;
+        mQuestion = mQuestionBank[mIndex].getQuestionID();
+        mQuestionTextView.setText(mQuestion);
+    }
+
+    private void checkAnswer(boolean userSelection) {
+
+        boolean correctAnswer = mQuestionBank[mIndex].isAnswer();
+
+        if(userSelection == correctAnswer) {
+            Toast.makeText(getApplicationContext(),R.string.correct_toast, Toast.LENGTH_SHORT).show();
+        } else {
+            Toast.makeText(getApplicationContext(),R.string.incorrect_toast, Toast.LENGTH_SHORT).show();
+        }
     }
 }
